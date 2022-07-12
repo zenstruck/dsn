@@ -1,0 +1,36 @@
+{
+    "name": "zenstruck/dsn",
+    "description": "DSN parsing library with support for complex expressions.",
+    "homepage": "https://github.com/zenstruck/dsn",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["dsn"],
+    "authors": [
+        {
+            "name": "Kevin Bond",
+            "email": "kevinbond@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "zenstruck/uri": "^1.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.4",
+        "phpunit/phpunit": "^9.5.0",
+        "psr/simple-cache": "^1.0|^2.0|^3.0",
+        "symfony/cache": "^5.4|^6.0",
+        "symfony/phpunit-bridge": "^6.0",
+        "symfony/var-dumper": "^5.4|^6.0"
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": { "Zenstruck\\": ["src/"] }
+    },
+    "autoload-dev": {
+        "psr-4": { "Zenstruck\\Dsn\\Tests\\": ["tests/"] }
+    }
+}
