@@ -3,6 +3,7 @@
 namespace Zenstruck\Dsn\Tests\Bridge\Symfony;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Dsn\Group;
 use Zenstruck\Dsn\Parser\CacheParser;
 use Zenstruck\Dsn\Tests\Fixture\Service;
 use Zenstruck\Uri;
@@ -25,5 +26,25 @@ final class ZenstruckDsnBundleTest extends KernelTestCase
 
         $this->assertInstanceOf(Uri::class, $parsed);
         $this->assertSame('scheme:?foo=bar', (string) $parsed);
+    }
+
+    /**
+     * @test
+     * @dataProvider factoryProvider
+     */
+    public function can_use_parser_as_factory(string $dsn, string $class): void
+    {
+        $_SERVER['MY_DSN'] = $dsn;
+
+        $dsnService = self::getContainer()->get('my_dsn');
+
+        $this->assertInstanceOf($class, $dsnService);
+        $this->assertSame($dsn, (string) $dsnService);
+    }
+
+    public static function factoryProvider(): iterable
+    {
+        yield ['some://dsn', Uri::class];
+        yield ['chain(some://dsn1 retry(some://dsn2)?times=5)', Group::class];
     }
 }
