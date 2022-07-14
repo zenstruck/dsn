@@ -10,9 +10,9 @@ use Zenstruck\Uri\Scheme;
  */
 final class Decorated extends Wrapped
 {
-    public function __construct(Scheme $scheme, Query $query, private \Stringable $inner)
+    public function __construct(Scheme $scheme, Query $query, ?string $fragment, private \Stringable $inner)
     {
-        parent::__construct($scheme, $query);
+        parent::__construct($scheme, $query, $fragment);
     }
 
     public function inner(): \Stringable

@@ -36,9 +36,11 @@ final class DsnTest extends TestCase
         yield ['scheme:?foo=bar', Uri::class, 'scheme:?foo=bar'];
         yield ['failover(smtp://default mail+api://default)?foo=bar', Group::class, 'failover(smtp://default mail+api://default)?foo=bar'];
         yield ['fail+over(smtp://default roundrobin(mail+api://default postmark+api://default))', Group::class, 'fail+over(smtp://default roundrobin(mail+api://default postmark+api://default))'];
+        yield ['fail+over(smtp://default roundrobin(mail+api://default postmark+api://default)#foo)#bar', Group::class, 'fail+over(smtp://default roundrobin(mail+api://default postmark+api://default)#foo)#bar'];
         yield ['failover()', Uri::class, 'failover%28%29'];
         yield ['fail+over(smtp://default)?foo=bar', Decorated::class, 'fail+over(smtp://default)?foo=bar'];
         yield ['fail-over(smtp://default)?foo=bar', Decorated::class, 'fail-over(smtp://default)?foo=bar'];
+        yield ['fail-over(smtp://default)?foo=bar#foo', Decorated::class, 'fail-over(smtp://default)?foo=bar#foo'];
     }
 
     /**
@@ -122,10 +124,30 @@ final class DsnTest extends TestCase
         $dsn = Dsn::parse('failover(smtp://default roundrobin(mail+api://default mailto:kevin)?a=b&c=d fail+over(mail+api://default round+robin(mail+api://default)?e=f&g=h)?i=j&k=l)?m=n&o=p');
 
         $this->assertInstanceOf(Group::class, $dsn);
+        $this->assertNull($dsn->fragment());
         $this->assertSame(['m' => 'n', 'o' => 'p'], $dsn->query()->all());
         $this->assertSame(['a' => 'b', 'c' => 'd'], $dsn->children()[1]->query()->all());
         $this->assertSame(['i' => 'j', 'k' => 'l'], $dsn->children()[2]->query()->all());
+        $this->assertNull($dsn->children()[2]->fragment());
         $this->assertSame(['e' => 'f', 'g' => 'h'], $dsn->children()[2]->children()[1]->query()->all());
+        $this->assertNull($dsn->children()[2]->children()[1]->fragment());
+    }
+
+    /**
+     * @test
+     */
+    public function can_parse_nested_group_dsn_with_parameters_and_fragments(): void
+    {
+        $dsn = Dsn::parse('failover(smtp://default roundrobin(mail+api://default mailto:kevin)?a=b&c=d fail+over(mail+api://default round+robin(mail+api://default)?e=f&g=h#f1)?i=j&k=l#f2)?m=n&o=p#f3');
+
+        $this->assertInstanceOf(Group::class, $dsn);
+        $this->assertSame('f3', $dsn->fragment());
+        $this->assertSame(['m' => 'n', 'o' => 'p'], $dsn->query()->all());
+        $this->assertSame(['a' => 'b', 'c' => 'd'], $dsn->children()[1]->query()->all());
+        $this->assertSame(['i' => 'j', 'k' => 'l'], $dsn->children()[2]->query()->all());
+        $this->assertSame('f2', $dsn->children()[2]->fragment());
+        $this->assertSame(['e' => 'f', 'g' => 'h'], $dsn->children()[2]->children()[1]->query()->all());
+        $this->assertSame('f1', $dsn->children()[2]->children()[1]->fragment());
     }
 
     /**
@@ -137,6 +159,22 @@ final class DsnTest extends TestCase
 
         $this->assertInstanceOf(Decorated::class, $dsn);
         $this->assertSame('fail+over', $dsn->scheme()->toString());
+        $this->assertNull($dsn->fragment());
+        $this->assertInstanceOf(Uri::class, $dsn->inner());
+        $this->assertSame('smtp://default', $dsn->inner()->toString());
+        $this->assertSame(['foo' => 'bar'], $dsn->query()->all());
+    }
+
+    /**
+     * @test
+     */
+    public function can_parse_decorated_dsn_with_fragment(): void
+    {
+        $dsn = Dsn::parse('fail+over(smtp://default)?foo=bar#fragment');
+
+        $this->assertInstanceOf(Decorated::class, $dsn);
+        $this->assertSame('fail+over', $dsn->scheme()->toString());
+        $this->assertSame('fragment', $dsn->fragment());
         $this->assertInstanceOf(Uri::class, $dsn->inner());
         $this->assertSame('smtp://default', $dsn->inner()->toString());
         $this->assertSame(['foo' => 'bar'], $dsn->query()->all());

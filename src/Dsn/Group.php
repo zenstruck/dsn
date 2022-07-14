@@ -13,9 +13,9 @@ final class Group extends Wrapped
     /**
      * @param \Stringable[] $children
      */
-    public function __construct(Scheme $scheme, Query $query, private array $children)
+    public function __construct(Scheme $scheme, Query $query, ?string $fragment, private array $children)
     {
-        parent::__construct($scheme, $query);
+        parent::__construct($scheme, $query, $fragment);
     }
 
     /**

@@ -22,20 +22,22 @@ final class WrappedParser implements Parser, ParserAware
 
     public function parse(string $dsn): Wrapped
     {
-        if (!\preg_match('#^([\w+-]+)\((.+)\)(\?.+)?$#', $dsn, $matches)) {
+        if (!\preg_match('#^([\w+-]+)\((.+)\)(\?[^\#]+)?(\#.+)?$#', $dsn, $matches)) {
             throw UnableToParse::value($dsn);
         }
 
         $scheme = new Scheme($matches[1]);
         $query = new Query($matches[3] ?? '');
+        $fragment = $matches[4] ?? null;
 
         if (1 === \count(\explode(' ', $matches[2]))) {
-            return new Decorated($scheme, $query, $this->parser()->parse($matches[2]));
+            return new Decorated($scheme, $query, $fragment, $this->parser()->parse($matches[2]));
         }
 
         return new Group(
             $scheme,
             $query,
+            $fragment,
             \array_map(fn(string $dsn) => $this->parser()->parse($dsn), self::explode($matches[2]))
         );
     }

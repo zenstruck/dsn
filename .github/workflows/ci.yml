@@ -8,20 +8,45 @@ on:
 
 jobs:
   tests:
-    name: PHP ${{ matrix.php }} - ${{ matrix.deps }}
+    name: PHP ${{ matrix.php }}, SF ${{ matrix.symfony }} - ${{ matrix.deps }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         php: [8.0, 8.1]
         deps: [hightest]
+        symfony: [5.4.*, 6.0.*]
         include:
           - php: 8.0
             deps: lowest
+            symfony: '*'
+          - php: 8.1
+            deps: highest
+            symfony: 6.1.*
     steps:
-      - uses: zenstruck/.github@php-test-symfony
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php: ${{ matrix.php }}
-          deps: ${{ matrix.deps }}
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: flex
+
+      - name: Restrict psr/simple-cache on Symfony 5.4
+        if: ${{ matrix.symfony == '5.4.*' }}
+        run: composer require --dev psr/simple-cache:"^1.0|^2.0" --no-update
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v1
+        with:
+          dependency-versions: ${{ matrix.deps }}
+          composer-options: --prefer-dist
+        env:
+          SYMFONY_REQUIRE: ${{ matrix.symfony }}
+
+      - name: Test
+        run: vendor/bin/phpunit -v
 
   code-coverage:
     uses: zenstruck/.github/.github/workflows/php-coverage-codecov.yml@main

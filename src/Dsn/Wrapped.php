@@ -10,17 +10,21 @@ use Zenstruck\Uri\Scheme;
  */
 abstract class Wrapped
 {
-    public function __construct(private Scheme $scheme, private Query $query)
+    public function __construct(private Scheme $scheme, private Query $query, private ?string $fragment)
     {
+        if ($this->fragment) {
+            $this->fragment = \ltrim($this->fragment, '#');
+        }
     }
 
     final public function __toString(): string
     {
         return \sprintf(
-            '%s(%s)%s',
+            '%s(%s)%s%s',
             $this->scheme(),
             $this->innerString(),
-            $this->query()->isEmpty() ? '' : "?{$this->query()}"
+            $this->query()->isEmpty() ? '' : "?{$this->query()}",
+            $this->fragment ? "#{$this->fragment}" : '',
         );
     }
 
@@ -32,6 +36,11 @@ abstract class Wrapped
     final public function query(): Query
     {
         return $this->query;
+    }
+
+    final public function fragment(): ?string
+    {
+        return $this->fragment;
     }
 
     abstract protected function innerString(): string;
