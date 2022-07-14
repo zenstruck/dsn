@@ -13,7 +13,7 @@ abstract class Wrapped
     public function __construct(private Scheme $scheme, private Query $query, private ?string $fragment)
     {
         if ($this->fragment) {
-            $this->fragment = \ltrim($this->fragment, '#');
+            $this->fragment = \rawurldecode(\ltrim($this->fragment, '#'));
         }
     }
 
@@ -24,7 +24,7 @@ abstract class Wrapped
             $this->scheme(),
             $this->innerString(),
             $this->query()->isEmpty() ? '' : "?{$this->query()}",
-            $this->fragment ? "#{$this->fragment}" : '',
+            $this->fragment ? \sprintf('#%s', \rawurlencode($this->fragment)) : '',
         );
     }
 
