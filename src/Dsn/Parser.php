@@ -14,5 +14,5 @@ interface Parser
      *
      * @throws UnableToParse
      */
-    public function parse(string $dsn): mixed;
+    public function parse(string $dsn): \Stringable;
 }

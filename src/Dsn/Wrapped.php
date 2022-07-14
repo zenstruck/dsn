@@ -8,7 +8,7 @@ use Zenstruck\Uri\Scheme;
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-abstract class Wrapped
+abstract class Wrapped implements \Stringable
 {
     public function __construct(private Scheme $scheme, private Query $query, private ?string $fragment)
     {

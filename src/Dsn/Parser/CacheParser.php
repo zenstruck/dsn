@@ -16,7 +16,7 @@ final class CacheParser implements Parser
     {
     }
 
-    public function parse(string $dsn): mixed
+    public function parse(string $dsn): \Stringable
     {
         // according to https://stackoverflow.com/a/3665527, this is the fastest hash
         $key = 'dsn-'.\hash('crc32', $dsn);

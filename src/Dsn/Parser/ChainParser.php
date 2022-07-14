@@ -20,7 +20,7 @@ final class ChainParser implements Parser
     {
     }
 
-    public function parse(string $dsn): mixed
+    public function parse(string $dsn): \Stringable
     {
         foreach ($this->parsers() as $parser) {
             if ($parser instanceof ParserAware) {
