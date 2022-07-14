@@ -36,13 +36,13 @@ If the parsing fails, a `Zenstruck\Dsn\Exception\UnableToParse` exception will b
 
 #### URI
 
-This DSN object is an instance of `\Zenstruck\Uri`. View it's
+This DSN object is an instance of `Zenstruck\Uri`. View it's
 [full API documentation](https://github.com/zenstruck/uri#parsingreading-uris).
 
 ```php
-$dsn = \Zenstruck\Dsn::parse('https://example.com/some/dir/file.html?q=abc&flag=1#test')
+$dsn = Zenstruck\Dsn::parse('https://example.com/some/dir/file.html?q=abc&flag=1#test')
 
-/* @var \Zenstruck\Uri $dsn */
+/* @var Zenstruck\Uri $dsn */
 $dsn->scheme()->toString(); // 'https'
 $dsn->host()->toString(); // 'example.com'
 $dsn->path()->toString(); // /some/dir/file.html
@@ -52,13 +52,13 @@ $dsn->fragment(); // 'test'
 
 #### Mailto
 
-This DSN object is an instance of `\Zenstruck\Uri\Mailto`. View it's
+This DSN object is an instance of `Zenstruck\Uri\Mailto`. View it's
 [full API documentation](https://github.com/zenstruck/uri#mailto-uris).
 
 ```php
-$dsn = \Zenstruck\Dsn::parse('mailto:kevin@example.com?cc=jane@example.com&subject=some+subject&body=some+body')
+$dsn = Zenstruck\Dsn::parse('mailto:kevin@example.com?cc=jane@example.com&subject=some+subject&body=some+body')
 
-/** @var \Zenstruck\Uri\Mailto $dsn */
+/** @var Zenstruck\Uri\Mailto $dsn */
 $dsn->to(); // ['kevin@example.com']
 $dsn->cc(); // ['jane@example.com']
 $dsn->bcc(); // []
@@ -74,24 +74,24 @@ This is a _DSN Function_ that wraps a single _inner_ DSN:
 retry(inner://dsn)?times=5
 ```
 
-The above example would parse to a `\Zenstruck\Dsn\Decorated` object with
+The above example would parse to a `Zenstruck\Dsn\Decorated` object with
 the following properties:
 
 * _Scheme/Function Name_: `retry`
 * _Query_: `['times' => '5']`
-* _Inner DSN_: This will be an instance of `\Zenstruck\Uri` in this case but could be
+* _Inner DSN_: This will be an instance of `Zenstruck\Uri` in this case but could be
   any [_DSN Object_](#parsing-dsns).
 
 ```php
-$dsn = \Zenstruck\Dsn::parse('retry(inner://dsn)?times=5');
+$dsn = Zenstruck\Dsn::parse('retry(inner://dsn)?times=5');
 
-/** @var \Zenstruck\Dsn\Decorated $dsn */
+/** @var Zenstruck\Dsn\Decorated $dsn */
 $dsn->scheme()->toString(); // 'retry'
 $dsn->query()->all(); // ['times' => '5']
 
 $inner = $dsn->inner();
 
-/** @var \Zenstruck\Uri $inner */
+/** @var Zenstruck\Uri $inner */
 $inner->scheme()->toString(); // 'inner'
 $inner->host()->toString(); // 'dsn'
 ```
@@ -104,24 +104,24 @@ This is a _DSN Function_ that wraps a multiple _inner_ DSNs (space separated):
 round+robin(inner://dsn1 inner://dsn2)?strategy=random
 ```
 
-The above example would parse to a `\Zenstruck\Dsn\Group` object with
+The above example would parse to a `Zenstruck\Dsn\Group` object with
 the following properties:
 
 * _Scheme/Function Name_: `round+robin`
 * _Query_: `['strategy' => 'random']`
-* _Child DSNs_: This will an array of _2_ `\Zenstruck\Uri` objects in this case but could an array
+* _Child DSNs_: This will be an `array` of _2_ `Zenstruck\Uri` objects in this case but could an array
   of any [_DSN Objects_](#parsing-dsns).
 
 ```php
-$dsn = \Zenstruck\Dsn::parse('round+robin(inner://dsn1 inner://dsn2)?strategy=random');
+$dsn = Zenstruck\Dsn::parse('round+robin(inner://dsn1 inner://dsn2)?strategy=random');
 
-/** @var \Zenstruck\Dsn\Group $dsn */
+/** @var Zenstruck\Dsn\Group $dsn */
 $dsn->scheme()->toString(); // 'round+robin'
 $dsn->query()->all(); // ['strategy' => 'random']
 
 $children = $dsn->children();
 
-/** @var \Zenstruck\Uri[] $children */
+/** @var Zenstruck\Uri[] $children */
 $children[0]->scheme()->toString(); // 'inner'
 $children[0]->host()->toString(); // 'dsn1'
 
@@ -134,21 +134,21 @@ $children[1]->host()->toString(); // 'dsn2'
 You can nest [Group](#group) and [Decorated](#decorated) DSNs to create complex expressions:
 
 ```php
-$dsn = \Zenstruck\Dsn::parse('retry(round+robin(inner://dsn1 inner://dsn2)?strategy=random)?times=5');
+$dsn = Zenstruck\Dsn::parse('retry(round+robin(inner://dsn1 inner://dsn2)?strategy=random)?times=5');
 
-/** @var \Zenstruck\Dsn\Decorated $dsn */
+/** @var Zenstruck\Dsn\Decorated $dsn */
 $dsn->scheme()->toString(); // 'retry'
 $dsn->query()->all(); // ['times' => '5']
 
 $inner = $dsn->inner();
 
-/** @var \Zenstruck\Dsn\Group $inner */
+/** @var Zenstruck\Dsn\Group $inner */
 $inner->scheme()->toString(); // 'round+robin'
 $inner->query()->all(); // ['strategy' => 'random']
 
 $children = $inner->children();
 
-/** @var \Zenstruck\Uri[] $children */
+/** @var Zenstruck\Uri[] $children */
 $children[0]->scheme()->toString(); // 'inner'
 $children[0]->host()->toString(); // 'dsn1'
 
@@ -162,13 +162,13 @@ Once parsed, you can use an `instanceof` check to determine the type of DSN that
 was parsed and act accordingly:
 
 ```php
-$dsn = \Zenstruck\Dsn::parse($someDsnString); // throws Zenstruck\Dsn\Exception\UnableToParse on failure
+$dsn = Zenstruck\Dsn::parse($someDsnString); // throws Zenstruck\Dsn\Exception\UnableToParse on failure
 
 switch (true) {
-    case $dsn instanceof \Zenstruck\Uri:
+    case $dsn instanceof Zenstruck\Uri:
         // do something with the Uri object
 
-    case $dsn instanceof \Zenstruck\Uri\Mailto:
+    case $dsn instanceof Zenstruck\Uri\Mailto:
         // do something with the Mailto object
 
     case $dsn instanceof Decorated:
@@ -254,8 +254,8 @@ $factory->create('retry(round+robin(mailchimp://key@default postmark://key@defau
 
 A Symfony Bundle is provided that adds an autowireable `Zenstruck\Dsn\Parser` service.
 This is an interface with a `parse(string $dsn)` method. It works identically
-to `Zenstruck\Dns::parse()` but caches the created _DSN object_ for a bit of a
-performance boost.
+to `Zenstruck\Dsn::parse()` but caches the created _DSN object_ (using `cache.system`)
+for a bit of a performance boost.
 
 To use, enable the bundle:
 
@@ -264,7 +264,7 @@ To use, enable the bundle:
 
 return [
     // ...
-    Zenstruck\Dsn\Bridge\Symfony\ZenstruckDsnBundle::class => ['all' => true],
+    Zenstruck\Dsn\Bridge\SymfonyZenstruckDsnBundle::class => ['all' => true],
 ];
 ```
 
