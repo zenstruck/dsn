@@ -250,6 +250,112 @@ $factory->create('retry(smtp://kevin:p4ssword:localhost)');
 $factory->create('retry(round+robin(mailchimp://key@default postmark://key@default)?strategy=sequential)?times=3');
 ```
 
+## Advanced Usage
+
+Under the hood `Zenstruck\Dsn::parse()` uses a parsing system for converting DSN
+strings to the packaged [DSN objects](#parsing-dsns). You can create your own
+parsers by having them implement the `Zenstruck\Dsn\Parser` interface.
+
+> **Note**
+> `Zenstruck\Dsn::parse()` is a utility function that only uses the
+> [core parsers](#core-parsers). In order to add your [own parsers](#custom-parsers),
+> you'll need to manually wire up a [chain parser](#chainparser) that includes them
+> and use this for parsing DSNs.
+
+### Core Parsers
+
+#### `UriParser`
+
+Converts url-looking strings to [`Zenstruck\Uri`](#uri) objects.
+
+#### `MailtoParser`
+
+Converts mailto-looking strings to [`Zenstruck\Uri\Mailto`](#mailto) objects.
+
+#### `WrappedParser`
+
+Converts dsn-function-looking strings to [`Zenstruck\Dsn\Decorated`](#decorated) or
+[`Zenstruck\Dsn\Group`](#group) objects.
+
+### Utility Parsers
+
+#### `ChainParser`
+
+Wraps a chain of parsers, during `parse()` it loops through these and
+attempts to find one that successfully parses a DSN string. It is considered
+successful if a `\Stringable` object is returned. If the parser throws a
+`Zenstruck\Dsn\Exception\UnableToParse` exception, the next parser in the
+chain is tried. Finally, if all the parsers throw `UnableToParse`, this is
+thrown.
+
+```php
+$parser = new Zenstruck\Dsn\Parser\ChainParser([$customParser1, $customParser1]);
+
+$parser->parse('some-dsn'); // \Stringable object
+```
+
+> **Note**
+> This parser always contains the [core parsers](#core-parsers) as the last items in
+> the chain. [Custom parsers](#custom-parsers) you add to the constructor are attempted
+> before these.
+
+#### `CacheParser`
+
+Wraps another parser and an instance of one of these cache interfaces:
+
+- `Symfony\Contracts\Cache\CacheInterface` (Symfony cache)
+- `Psr\Cache\CacheItemPoolInterface` (PSR-6 cache)
+- `Psr\SimpleCache\CacheInterface` (PSR-16 cache)
+
+The parsed object is cached (keyed by the DSN string) and subsequent
+parsing of the same string are retrieved from the cache. This gives a
+bit of a performance boost especially for [complex DSNs](#complex-dsns).
+
+```php
+/** @var SymfonyCache|Psr6Cache|Psr16Cache $cache */
+/** @var Zenstruck\Dsn\Parser $inner */
+
+$parser = new \Zenstruck\Dsn\Parser\CacheParser($parser, $cache);
+
+$parser->parse('some-dsn'); // \Stringable (caches this object)
+
+$parser->parse('some-dsn'); // \Stringable (retrieved from cache)
+```
+
+### Custom Parsers
+
+You can create your own parser by creating an object that implements
+`Zenstruck\Dsn\Parser`:
+
+```php
+use Zenstruck\Dsn\Exception\UnableToParse;
+use Zenstruck\Dsn\Parser;
+
+class MyParser implements Parser
+{
+    public function parse(string $dsn): \Stringable
+    {
+        // determine if $dsn is parsable and return a \Stringable DSN object
+
+        throw UnableToParse::value($dsn); // important when using in a chain parser
+    }
+}
+```
+
+Usage:
+
+```php
+// standalone
+$parser = new MyParser();
+
+$parser->parse('some-dsn');
+
+// add to ChainParser
+$parser = new Zenstruck\Dsn\Parser\ChainParser([new MyParser()]);
+
+$parser->parse('some-dsn');
+```
+
 ## Symfony Bundle
 
 A Symfony Bundle is provided that adds an autowireable `Zenstruck\Dsn\Parser` service.
