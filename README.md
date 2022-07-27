@@ -1,5 +1,8 @@
 # zenstruck/dsn
 
+[![CI Status](https://github.com/zenstruck/dsn/workflows/CI/badge.svg)](https://github.com/zenstruck/dsn/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/zenstruck/dsn/branch/1.x/graph/badge.svg?token=uXk5xgPh7I)](https://codecov.io/gh/zenstruck/dsn)
+
 DSN parsing library with support for complex expressions:
 
 1. [**URI**](#uri): `http://example.com?foo=bar#baz`
