@@ -18,6 +18,6 @@ final class Dsn
 
     public static function parse(string $value): Uri|Mailto|Group|Decorated
     {
-        return (self::$defaultParser ??= new ChainParser())->parse($value);
+        return (self::$defaultParser ??= new ChainParser())->parse($value); // @phpstan-ignore-line
     }
 }

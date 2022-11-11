@@ -7,8 +7,8 @@ use Zenstruck\Dsn\Exception\UnableToParse;
 use Zenstruck\Dsn\Group;
 use Zenstruck\Dsn\Parser;
 use Zenstruck\Dsn\Wrapped;
-use Zenstruck\Uri\Query;
-use Zenstruck\Uri\Scheme;
+use Zenstruck\Uri\Part\Query;
+use Zenstruck\Uri\Part\Scheme;
 
 /**
  * Parses strings like "name(dsn1 dsn2)" into a "Group" dsn and

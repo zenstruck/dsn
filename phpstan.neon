@@ -2,7 +2,3 @@ parameters:
     level: 8
     paths:
         - src
-    ignoreErrors:
-        - message: "#^Method Zenstruck\\\\Dsn\\:\\:parse\\(\\) should return Zenstruck\\\\Dsn\\\\Decorated\\|Zenstruck\\\\Dsn\\\\Group\\|Zenstruck\\\\Uri\\|Zenstruck\\\\Uri\\\\Mailto but returns Stringable\\.$#"
-          count: 1
-          path: src/Dsn.php
