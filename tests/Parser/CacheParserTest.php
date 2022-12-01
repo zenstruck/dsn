@@ -5,7 +5,6 @@ namespace Zenstruck\Dsn\Tests\Parser;
 use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface as Psr6Cache;
-use Psr\SimpleCache\CacheInterface as Psr16Cache;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Zenstruck\Dsn\Exception\UnableToParse;
 use Zenstruck\Dsn\Parser\CacheParser;
@@ -21,7 +20,7 @@ final class CacheParserTest extends TestCase
      * @test
      * @dataProvider cacheProvider
      */
-    public function throws_exception_if_unable_to_parse(Psr6Cache|Psr16Cache $cache): void
+    public function throws_exception_if_unable_to_parse(Psr6Cache $cache): void
     {
         $parser = new CacheParser(new ChainParser(), $cache);
 
@@ -39,7 +38,7 @@ final class CacheParserTest extends TestCase
      * @test
      * @dataProvider cacheProvider
      */
-    public function can_cache_result(Psr6Cache|Psr16Cache $cache): void
+    public function can_cache_result(Psr6Cache $cache): void
     {
         $parser = new CacheParser(new ChainParser(), $cache);
 
@@ -56,7 +55,6 @@ final class CacheParserTest extends TestCase
     public static function cacheProvider(): iterable
     {
         yield [new ArrayAdapter()]; // Symfony Cache
-        yield [new \Symfony\Component\Cache\Psr16Cache(new ArrayAdapter())]; // Psr16Cache
         yield [
             new class() implements Psr6Cache {
                 private ArrayAdapter $c;
@@ -114,17 +112,10 @@ final class CacheParserTest extends TestCase
         ];
     }
 
-    private static function changeCacheValue(Psr6Cache|Psr16Cache $cache, string $key, mixed $new): void
+    private static function changeCacheValue(Psr6Cache $cache, string $key, mixed $new): void
     {
         $key = 'dsn-'.\hash('crc32', $key);
-
-        if ($cache instanceof Psr6Cache) {
-            $item = $cache->getItem($key);
-            $cache->save($item->set($new));
-
-            return;
-        }
-
-        $cache->set($key, $new);
+        $item = $cache->getItem($key);
+        $cache->save($item->set($new));
     }
 }
