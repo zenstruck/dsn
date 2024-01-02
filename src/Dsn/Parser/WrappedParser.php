@@ -47,7 +47,7 @@ final class WrappedParser implements Parser, ParserAware
             $scheme,
             $query,
             $fragment,
-            \array_map(fn(string $dsn) => $this->parser()->parse($dsn), self::explode($matches[2]))
+            \array_map(fn(string $dsn) => $this->parser()->parse($dsn), self::explode($matches[2])),
         );
     }
 
