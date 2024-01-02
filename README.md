@@ -244,10 +244,10 @@ The usage of this factory is as follows:
 use Zenstruck\Dsn;
 
 // SmtpTransport:
-$factory->create('smtp://kevin:p4ssword:localhost');
+$factory->create('smtp://kevin:p4ssword@localhost');
 
 // RetryTransport wrapping SmtpTransport:
-$factory->create('retry(smtp://kevin:p4ssword:localhost)');
+$factory->create('retry(smtp://kevin:p4ssword@localhost)');
 
 // RetryTransport (3 retries) wrapping RoundRobinTransport (sequential strategy) wrapping MailchimpTransport & PostmarkTransport
 $factory->create('retry(round+robin(mailchimp://key@default postmark://key@default)?strategy=sequential)?times=3');
