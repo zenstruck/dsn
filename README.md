@@ -1,6 +1,6 @@
 # zenstruck/dsn
 
-[![CI Status](https://github.com/zenstruck/dsn/workflows/CI/badge.svg)](https://github.com/zenstruck/dsn/actions?query=workflow%3ACI)
+[![CI](https://github.com/zenstruck/dsn/actions/workflows/ci.yml/badge.svg)](https://github.com/zenstruck/dsn/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/zenstruck/dsn/branch/1.x/graph/badge.svg?token=uXk5xgPh7I)](https://codecov.io/gh/zenstruck/dsn)
 
 DSN parsing library with support for complex expressions:
