@@ -9,7 +9,7 @@ DSN parsing library with support for complex expressions:
 2. [**Mailto**](#mailto): `mailto:sam@example.com?cc=jane@example.com`
 3. _DSN Functions_:
    1. [**Decorated**](#decorated): `retry(inner://dsn)?times=5`
-   2. [**Group**](#group): `rount+robin(inner://dsn1 inner://dsn2)`
+   2. [**Group**](#group): `round+robin(inner://dsn1 inner://dsn2)`
    3. [**Complex**](#complex-dsns): `fail+over(rount+robin(inner://dsn1 inner://dsn2) inner://dsn3)`
 
 ## Installation
