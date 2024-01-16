@@ -25,7 +25,7 @@ use Zenstruck\Uri\Part\Scheme;
  *
  * @author Kevin Bond <kevinbond@gmail.com>
  */
-final class WrappedParser implements Parser, ParserAware
+final class WrappedParser implements Parser, Parser\ParserAware
 {
     private Parser $parser;
 
