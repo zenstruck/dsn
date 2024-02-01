@@ -32,7 +32,7 @@ final class ChainParser implements Parser
     public function parse(string $dsn): \Stringable
     {
         foreach ($this->parsers() as $parser) {
-            if ($parser instanceof Parser\ParserAware) {
+            if ($parser instanceof ParserAware) {
                 $parser->setParser($this);
             }
 
@@ -61,9 +61,9 @@ final class ChainParser implements Parser
     private static function defaultParsers(): array
     {
         return self::$defaultParsers ??= [
-            new Parser\WrappedParser(),
-            new Parser\MailtoParser(),
-            new Parser\UriParser(),
+            new WrappedParser(),
+            new MailtoParser(),
+            new UriParser(),
         ];
     }
 }
