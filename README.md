@@ -373,7 +373,7 @@ To use, enable the bundle:
 
 return [
     // ...
-    Zenstruck\Dsn\Bridge\SymfonyZenstruckDsnBundle::class => ['all' => true],
+    Zenstruck\Dsn\Bridge\Symfony\ZenstruckDsnBundle::class => ['all' => true],
 ];
 ```
 
